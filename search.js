@@ -54,20 +54,13 @@ class Search {
 
       for (let i = 0; i < neighbors.length; i++) {
         const neighbor = neighbors[i];
-        if (
-          neighbor.closed ||
-          neighbor.isWall() ||
-          neighbor.x < 0 ||
-          neighbor.x >= grid[0].length ||
-          neighbor.y < 0 ||
-          neighbor.y >= grid.length
-        ) {
+        if (neighbor.closed || neighbor.isWall()) {
           continue;
         }
         let gScore = currentNode.g + 1;
         let gScoreIsBest = false;
 
-        if (neighbor.isBoundary()) gScore = 1111;
+        if (neighbor.isBoundary()) gScore = 11111;
 
         if (!neighbor.visited || gScore < neighbor.g) {
           gScoreIsBest = true;
@@ -91,14 +84,14 @@ class Search {
     const d1 = Math.abs(pos1.x - pos0.x);
     const d2 = Math.abs(pos1.y - pos0.y);
 
-    return sqrt(d1 * d1 + d2 * d2);
+    return 1 / sqrt(d1 * d1 + d2 * d2);
   }
 
   manhattan(pos0, pos1) {
     const d1 = Math.abs(pos1.x - pos0.x);
     const d2 = Math.abs(pos1.y - pos0.y);
 
-    return d1 + d2;
+    return 1 / (d1 + d2);
   }
 
   farthest(pos0, pos1) {

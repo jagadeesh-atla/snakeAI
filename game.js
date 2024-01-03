@@ -39,18 +39,13 @@ class Game {
 
     let path = search.search(graph.nodes, start, end);
 
-    //if (findLongest && path.length != 0) console.log("Longest path found");
     if (path.length === 0) {
       graph.nodes[y][x].type = 0;
-      //if (findLongest) console.log("tail Longest thing!");
-      //else console.log("tail thing!");
+
       path = search.search(graph.nodes, start, tail);
     }
 
-    // console.log(path);
-
     if (path.length === 0) {
-      //console.log("No path found");
       this.gameOver();
     } else {
       this.moveToThat(path);
@@ -67,9 +62,6 @@ class Game {
     else if (dx === 1 && dy === 0) keyPressed({ keyCode: RIGHT_ARROW });
     else if (dx === -1 && dy === 0) keyPressed({ keyCode: LEFT_ARROW });
     else {
-      //console.log(head);
-      //console.log(dx, dy);
-      //console.log("Something went wrong.");
       this.gameOver();
     }
   }
@@ -109,7 +101,7 @@ class Game {
     }
 
     this.snake.reset();
-    // noLoop();
+
     this.food.position = this.food.generateRandomPos(this.snake.body);
     this.running = false;
     this.score = 0;

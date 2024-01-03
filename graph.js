@@ -79,6 +79,8 @@ class GraphNode {
 
     if (x === 0 || y === 0 || x === cellCountX - 1 || y === cellCountY - 1)
       return true;
+
+    return false;
   }
 
   equals(other) {

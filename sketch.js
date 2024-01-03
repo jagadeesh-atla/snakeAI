@@ -35,6 +35,12 @@ function setup() {
   snakeColor = color("white");
   foodColor = color("red");
 
+  let hammer = new Hammer(document.body, { preventDefault: true });
+  hammer.get("swipe").set({
+    direction: Hammer.DIRECTION_ALL,
+  });
+  hammer.on("swipe", swiped);
+
   frameRate(60);
 }
 
@@ -169,4 +175,17 @@ function eventTriggered(interval) {
     return true;
   }
   return false;
+}
+
+function swiped(event) {
+  switch (event.direction) {
+    case 4:
+      keyPressed({ keyCode: RIGHT_ARROW });
+    case 8:
+      keyPressed({ keyCode: UP_ARROW });
+    case 16:
+      keyPressed({ keyCode: DOWN_ARROW });
+    case 2:
+      keyPressed({ keyCode: RIGHT_ARROW });
+  }
 }
