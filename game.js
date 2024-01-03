@@ -14,11 +14,13 @@ class Game {
   }
 
   update() {
-    if (isAIPlaying) this.letAIplay();
-    this.snake.update();
-    this.checkCollisionWithFood();
-    this.checkCollisionWithEdge();
-    this.checkCollisionWithTail();
+    if (this.running) {
+      if (isAIPlaying) this.letAIplay();
+      this.snake.update();
+      this.checkCollisionWithFood();
+      this.checkCollisionWithEdge();
+      this.checkCollisionWithTail();
+    }
   }
 
   letAIplay() {
@@ -101,8 +103,13 @@ class Game {
   }
 
   gameOver() {
-    noLoop();
+    if (this.score > maxScore) {
+      maxScore = this.score;
+      localStorage.setItem("maxScore", maxScore);
+    }
 
+    this.snake.reset();
+    // noLoop();
     this.food.position = this.food.generateRandomPos(this.snake.body);
     this.running = false;
     this.score = 0;

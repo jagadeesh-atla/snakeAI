@@ -74,6 +74,13 @@ class GraphNode {
     this.type = type;
   }
 
+  isBoundary() {
+    const { x, y } = this;
+
+    if (x === 0 || y === 0 || x === cellCountX - 1 || y === cellCountY - 1)
+      return true;
+  }
+
   equals(other) {
     return this.x === other.x && this.y === other.y;
   }

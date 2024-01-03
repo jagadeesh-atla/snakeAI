@@ -6,10 +6,11 @@ let game;
 let bgColor, gridColor, snakeColor, foodColor;
 let lastUpdateTime = 0;
 
+let maxScore = localStorage.getItem("maxScore") || 0;
 let search;
 
-const isAIPlaying = true;
-const interval = isAIPlaying ? 0.00000000001 : 0.15;
+let isAIPlaying = false;
+let interval = isAIPlaying ? 0.00001 : 0.15;
 
 function preload() {
   eatSound = loadSound("Sounds/eat.mp3");
@@ -38,18 +39,73 @@ function setup() {
 }
 
 function draw() {
+  interval = isAIPlaying ? 0.00000000001 : 0.15;
+
   background(bgColor);
+
+  fill(255);
+  textSize(20);
+  textAlign(RIGHT);
+  text(`Score: ${game.score}`, width - 10, 30);
+  text(`Max Score: ${maxScore}`, width - 10, 60);
+
+  let buttonY = 50;
+  let buttonHeight = 40;
+  let buttonSpacing = 10;
+
+  fill(100);
+  rect(width / 2 - 100, buttonY, 200, buttonHeight);
+  rect(
+    width / 2 - 100,
+    buttonY + buttonHeight + buttonSpacing,
+    200,
+    buttonHeight
+  );
+  rect(
+    width / 2 - 100,
+    buttonY + 2 * (buttonHeight + buttonSpacing),
+    200,
+    buttonHeight
+  );
+
+  fill(255);
+  textSize(16);
+  textAlign(CENTER, CENTER);
+  text("AI Player", width / 2, buttonY + buttonHeight / 2);
+  text(
+    "Human Player",
+    width / 2,
+    buttonY + buttonHeight + buttonSpacing + buttonHeight / 2
+  );
+  text(
+    "Restart",
+    width / 2,
+    buttonY + 2 * (buttonHeight + buttonSpacing) + buttonHeight / 2
+  );
 
   strokeWeight(0.5);
   stroke(gridColor);
   drawGridLines();
 
-  if (game.running) {
-    if (eventTriggered(interval)) {
-      allowMove = true;
-      game.update();
+  if (eventTriggered(interval)) {
+    allowMove = true;
+    game.update();
+  }
+  game.draw();
+}
+
+function mouseClicked() {
+  let buttonY = 50;
+
+  if (mouseX > width / 2 - 100 && mouseX < width / 2 + 100) {
+    if (mouseY > buttonY && mouseY < buttonY + 40) {
+      isAIPlaying = true;
+    } else if (mouseY > buttonY + 50 && mouseY < buttonY + 90) {
+      isAIPlaying = false;
+    } else if (mouseY > buttonY + 100 && mouseY < buttonY + 140) {
+      game.score = 0;
+      game.snake.reset();
     }
-    game.draw();
   }
 }
 
@@ -74,8 +130,6 @@ function drawGridLines() {
 }
 
 function keyPressed(event) {
-  if (!isAIPlaying) return;
-
   const keyCode = event.keyCode;
   if (keyCode === UP_ARROW && game.snake.direction.y !== 1 && allowMove) {
     game.snake.direction = createVector(0, -1);
@@ -115,17 +169,4 @@ function eventTriggered(interval) {
     return true;
   }
   return false;
-}
-
-function test() {
-  const graph = new Graph(Maze(game.snake.body));
-  let { x, y } = game.snake.body[0];
-  const start = graph.nodes[y][x];
-  x = game.food.position.x;
-  y = game.food.position.y;
-  end = graph.nodes[y][x];
-
-  const path = xd.search(graph.nodes, start, end);
-
-  // console.log(path);
 }

@@ -19,177 +19,72 @@ class Search {
     }
   }
 
-  // search(grid, start, end) {
-  //   this.init(grid);
-
-  //   const heuristic = this.farthest;
-  //   const possiblePaths = [];
-
-  //   const openList = [];
-  //   openList.push(start);
-
-  //   while (openList.length > 0) {
-  //     let lowInd = 0;
-  //     for (let i = 0; i < openList.length; i++) {
-  //       if (openList[i].f < openList[lowInd].f) {
-  //         lowInd = i;
-  //       }
-  //     }
-  //     let currentNode = openList[lowInd];
-
-  //     openList.splice(lowInd, 1);
-  //     currentNode.closed = true;
-
-  //     if (currentNode.equals(end)) {
-  //       let curr = currentNode;
-  //       const ret = [];
-  //       while (curr.parent != null) {
-  //         ret.push(curr);
-  //         curr = curr.parent;
-  //       }
-  //       // return ret.reverse();
-  //       possiblePaths.push(ret.slice().reverse());
-
-  //       // Reset nodes for finding another path
-  //       for (let i = 0; i < grid.length; i++) {
-  //         for (let j = 0; j < grid[i].length; j++) {
-  //           const node = grid[i][j];
-  //           node.visited = false;
-  //           node.closed = false;
-  //           node.parent = null;
-  //         }
-  //       }
-
-  //       openList.length = 0;
-  //       openList.push(start);
-  //     }
-
-  //     const neighbors = this.neighbors(grid, currentNode);
-
-  //     for (let i = 0; i < neighbors.length; i++) {
-  //       const neighbor = neighbors[i];
-  //       if (neighbor.closed || neighbor.isWall()) {
-  //         continue;
-  //       }
-  //       let gScore = currentNode.g + 1;
-  //       let gScoreIsBest = false;
-
-  //       if (!neighbor.visited || gScore < neighbor.g) {
-  //         gScoreIsBest = true;
-  //         neighbor.parent = currentNode;
-  //         neighbor.g = gScore;
-  //         neighbor.h = heuristic(neighbor.pos, end.pos);
-  //         neighbor.f = neighbor.g + neighbor.h;
-  //         neighbor.debug =
-  //           "F: " +
-  //           neighbor.f +
-  //           "<br />G: " +
-  //           neighbor.g +
-  //           "<br />H: " +
-  //           neighbor.h;
-  //         neighbor.visited = true;
-  //         if (!openList.includes(neighbor)) openList.push(neighbor);
-  //       }
-  //     }
-  //   }
-
-  //   possiblePaths.sort((a, b) => b.length - a.length);
-
-  //   console.log("paths: " + possiblePaths.length);
-
-  //   // for (const path of possiblePaths) {
-  //   //   if (this.canReach80(path)) {
-  //   //     return path;
-  //   //   }
-  //   // }
-
-  //   return possiblePaths.length > 0 ? possiblePaths[0] : [];
-  // }
-
   search(grid, start, end) {
     this.init(grid);
 
     const heuristic = this.euclidean;
-    const maxIterations = 300; // Set a maximum number of iterations
-    let iteration = 0;
-    const possiblePaths = [];
 
-    while (iteration < maxIterations) {
-      const openList = [];
-      openList.push(start);
+    const openList = [];
+    openList.push(start);
 
-      while (openList.length > 0) {
-        let lowInd = 0;
-        for (let i = 0; i < openList.length; i++) {
-          if (openList[i].f < openList[lowInd].f) {
-            lowInd = i;
-          }
+    while (openList.length > 0) {
+      let lowInd = 0;
+      for (let i = 0; i < openList.length; i++) {
+        if (openList[i].f < openList[lowInd].f) {
+          lowInd = i;
         }
-        let currentNode = openList[lowInd];
+      }
+      let currentNode = openList[lowInd];
 
-        openList.splice(lowInd, 1);
-        currentNode.closed = true;
+      openList.splice(lowInd, 1);
+      currentNode.closed = true;
 
-        if (currentNode.equals(end)) {
-          let curr = currentNode;
-          const ret = [];
-          while (curr.parent != null) {
-            ret.push(curr);
-            curr = curr.parent;
-          }
-
-          if (this.canReach80(ret)) return ret.reverse();
-          possiblePaths.push(ret.reverse().slice());
-
-          // Reset nodes for finding another path
-          for (let i = 0; i < grid.length; i++) {
-            for (let j = 0; j < grid[i].length; j++) {
-              const node = grid[i][j];
-              node.visited = false;
-              node.closed = false;
-              node.parent = null;
-            }
-          }
-          break; // Exit the loop after finding a path
+      if (currentNode.equals(end)) {
+        let curr = currentNode;
+        const ret = [];
+        while (curr.parent != null) {
+          ret.push(curr);
+          curr = curr.parent;
         }
 
-        const neighbors = this.neighbors(grid, currentNode);
+        return ret.slice().reverse();
+      }
 
-        for (let i = 0; i < neighbors.length; i++) {
-          const neighbor = neighbors[i];
-          if (neighbor.closed || neighbor.isWall()) {
-            continue;
-          }
-          let gScore = currentNode.g + 1;
-          let gScoreIsBest = false;
+      const neighbors = this.neighbors(grid, currentNode);
 
-          if (!neighbor.visited || gScore < neighbor.g) {
-            gScoreIsBest = true;
-            neighbor.parent = currentNode;
-            neighbor.g = gScore;
-            neighbor.h = heuristic(neighbor.pos, end.pos);
-            neighbor.f = neighbor.g + neighbor.h;
-            neighbor.visited = true;
+      for (let i = 0; i < neighbors.length; i++) {
+        const neighbor = neighbors[i];
+        if (
+          neighbor.closed ||
+          neighbor.isWall() ||
+          neighbor.x < 0 ||
+          neighbor.x >= grid[0].length ||
+          neighbor.y < 0 ||
+          neighbor.y >= grid.length
+        ) {
+          continue;
+        }
+        let gScore = currentNode.g + 1;
+        let gScoreIsBest = false;
 
-            if (!openList.includes(neighbor)) {
-              openList.push(neighbor);
-            }
+        if (neighbor.isBoundary()) gScore = 1111;
+
+        if (!neighbor.visited || gScore < neighbor.g) {
+          gScoreIsBest = true;
+          neighbor.parent = currentNode;
+          neighbor.g = gScore;
+          neighbor.h = heuristic(neighbor.pos, end.pos);
+          neighbor.f = neighbor.g + neighbor.h;
+          neighbor.visited = true;
+
+          if (!openList.includes(neighbor)) {
+            openList.push(neighbor);
           }
         }
       }
-
-      for (const path of possiblePaths) {
-        if (this.canReach80(path)) {
-          return path;
-        }
-      }
-      iteration++;
     }
 
-    possiblePaths.sort((a, b) => b.length - a.length);
-
-    console.log("paths: " + possiblePaths.length);
-    return possiblePaths.length > 0 ? possiblePaths[0] : [];
+    return [];
   }
 
   euclidean(pos0, pos1) {
@@ -233,41 +128,13 @@ class Search {
     return ret;
   }
 
-  // canReach80(path) {
-  //   const { grid, start } = this.updateGrid(path);
-  //   const totalCells = grid.length * grid[0].length - game.snake.body.length;
-  //   const reachableCells = new Set();
-
-  //   const queue = [{ x: start.x, y: start.y }];
-  //   reachableCells.add({ x: start.x, y: start.y });
-
-  //   while (queue.length > 0) {
-  //     const currentNode = queue.shift();
-  //     const neighbors = this.neighbors(grid, currentNode);
-
-  //     for (const neighbor of neighbors) {
-  //       if (
-  //         !reachableCells.has({ x: neighbor.x, y: neighbor.y }) &&
-  //         !neighbor.isWall()
-  //       ) {
-  //         reachableCells.add({ x: neighbor.x, y: neighbor.y });
-  //         queue.push({ x: neighbor.x, y: neighbor.y });
-
-  //         if (reachableCells.size / totalCells >= 0.8) return true;
-  //       }
-  //     }
-  //   }
-
-  //   return false;
-  // }
-
   canReach80(path) {
     const { grid, start } = this.updateGrid(path);
     const totalCells = grid.length * grid[0].length - game.snake.body.length;
     const reachableCells = new Set();
 
     const queue = [{ x: start.x, y: start.y }];
-    reachableCells.add(`${start.x},${start.y}`); // Using a string key for coordinates
+    reachableCells.add(`${start.x},${start.y}`);
 
     while (queue.length > 0) {
       const currentNode = queue.shift();
@@ -289,7 +156,7 @@ class Search {
             reachableCells.size / totalCells >= 0.6 ||
             reachableCells.size > totalCells * 0.6
           ) {
-            return true; // Early exit if 80% reachable cells reached
+            return true;
           }
         }
       }

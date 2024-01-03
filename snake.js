@@ -6,30 +6,6 @@ class Snake {
     this.path = [];
   }
 
-  // draw() {
-  //   noStroke();
-  //   fill(snakeColor);
-
-  //   ellipse(
-  //     canvasOffsetX + this.body[0].x * cellSize + cellSize / 2,
-  //     canvasOffsetY + this.body[0].y * cellSize + cellSize / 2,
-  //     cellSize,
-  //     cellSize
-  //   );
-
-  //   for (let i = 1; i < this.body.length; i++) {
-  //     let x = this.body[i].x;
-  //     let y = this.body[i].y;
-  //     rect(
-  //       canvasOffsetX + x * cellSize,
-  //       canvasOffsetY + y * cellSize,
-  //       cellSize,
-  //       cellSize,
-  //       6
-  //     );
-  //   }
-  // }
-
   draw() {
     noStroke();
 
